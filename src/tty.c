@@ -641,8 +641,18 @@ int tty_connect(void)
                     /* Print timestamp on new line, if desired. */
                     if (next_timestamp && input_char != '\n' && input_char != '\r')
                     {
-                        fprintf(stdout, ANSI_COLOR_GRAY "[%s] " ANSI_COLOR_RESET, current_time());
+                        char* ctime = current_time();
+                        fprintf(stdout, ANSI_COLOR_GRAY "[%s] " ANSI_COLOR_RESET, ctime);
                         next_timestamp = 0;
+                        if (option.log) {
+                            log_write('[');
+                            while (*ctime) {
+                                log_write(*ctime);
+                                ++ctime;
+                            }
+                            log_write(']');
+                            log_write(' ');
+                        }
                     }
 
                     /* Map input character */

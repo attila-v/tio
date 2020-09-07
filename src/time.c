@@ -22,17 +22,23 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <sys/time.h>
 #include "tio/error.h"
 #include "tio/print.h"
 
+static char time_string[24];
+
 char * current_time(void)
 {
-    static char time_string[20];
     time_t t;
     struct tm *tmp;
 
-    t = time(NULL);
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+
+    t = tv.tv_sec;
     tmp = localtime(&t);
     if (tmp == NULL)
     {
@@ -41,6 +47,7 @@ char * current_time(void)
     }
 
     strftime(time_string, sizeof(time_string), "%H:%M:%S", tmp);
+    snprintf(time_string + strlen(time_string), sizeof(time_string), ".%03ld", tv.tv_usec / 1000);
 
     return time_string;
 }
